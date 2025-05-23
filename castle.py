@@ -69,9 +69,126 @@ def haiti(dt:list):
    print("{:d}番目".format(ansnum[i]+1),end=" ")
   print("この時の塔間の距離の最小値は{:d}です。\n".format(ans))
 
+def judge(dt:list,n:int,x:int):
+  ans=0
+  for i in range(0,len(dt)):#スタート地点
+    for j in range(i,len(dt)):#スタートから最後の塔まで
+      ans+=dt[j]
+      tmp=0
+      ctn=1
+      if ans==x:# and x*n<sum(dt):
+        for l in range(j+1,len(dt)):
+          tmp+=dt[l]
+          if tmp>=ans:
+            tmp=0
+            ctn+=1
+        for l in range(0,i):
+          tmp+=dt[l]
+          if tmp>=ans:
+            tmp=0
+            ctn+=1
+        if ctn>=n:
+          return True
+      elif ans>x:
+        break
+    for k in range(0,i):#最初の塔からスタートまで
+      ans+=dt[k]
+      if ans==x:# and x*n<sum(dt):
+        for l in range(j+1,len(dt)):
+          tmp+=dt[l]
+          if tmp>=ans:
+            tmp=0
+            ctn+=1
+        for l in range(0,i):
+          tmp+=dt[l]
+          if tmp>=ans:
+            tmp=0
+            ctn+=1
+        if ctn>=n:
+          return True
+      elif ans>x:
+        break
+    ans=0
+
+
+def linear(dt:list):
+  while True:
+    n=int(input("見張りの人数を入力してください\n："))
+    if 1<n<=len(dt):
+        break
+    print("エラー\n")
+
+  x=min(dt)
+  while True:
+   if judge(dt,n,x):
+     kouho=x
+ #    print("候補に",x)
+   x+=1
+
+   if x>(sum(dt)/n):
+     break
+  print("答えは",end="")
+  print(kouho)
+
+
+
+def binary(dt:list):
+
+  while True:
+    n=int(input("見張りの人数を入力してください\n："))
+    if 1<n<=len(dt):
+        break
+    print("エラー\n")
+  kouho=0
+  i=0
+  j=sum(dt)//n
+  mitukaranai=0
+  senkei=0
+  while True:
+    if mitukaranai==1:
+      if senkei==1:
+        t=k
+      k+=1#見つかんなかったら条件分岐で線形探索っぽくいく
+    else:
+      k=(i+j)//2#「//」は商の整数値という意味
+
+    if judge(dt,n,k):
+      senkei=0
+      kouho=k
+      i=k+1#見つかったらそれより上を探す
+   #   print("候補に",k)
+      mitukaranai=0
+    else:
+      mitukaranai=1#見つからなかった時それより下とは限らない
+      senkei+=1
+    if j<=i:
+      break
+    if j<=k:
+      j=t-1
+      senkei=0
+      mitukaranai=0
+  print("答えは",end="")
+  print(kouho)
+      
+
+
 haiti(d0)
 haiti(d0)
 haiti(d0)
 haiti(d1)
 haiti(d1)
 haiti(d1)
+
+
+
+linear(d2)
+linear(d2)
+linear(d3)
+linear(d3)
+# linear(d4)
+# linear(d4)
+
+binary(d3)
+binary(d3)
+binary(d4)
+binary(d4)
