@@ -301,6 +301,72 @@ class JADE:
               u[i] = v[i]
         return u
 
+
+class GradientAidedGA:
+    def __init__(self, N, Xmax, MAX_EVALUATIONS, PROB_DIMEINTION):
+        self.N = N
+        self.Xmax = Xmax
+        self.MAX_EVALUATIONS = MAX_EVALUATIONS
+        self.PROB_DIMEINTION = PROB_DIMEINTION
+        self.population = np.random.uniform(-Xmax, Xmax, (N, PROB_DIMEINTION))
+
+        self.fitness = None
+        self.history = []
+        self.gradient_scores = np.zeros(N)
+        self.BestX = None
+        self.BestFX = None
+        self.prob = None  # ← evaluate() が先に呼ばれないとエラー防止
+
+    def _evaluate(self, x):
+        if self.prob is None:
+            raise ValueError("self.prob must be set before calling _evaluate()")
+        return self.prob.evaluate(x)
+
+    def initialization(self):
+        self.population = np.random.uniform(-self.Xmax, self.Xmax, (self.N, self.PROB_DIMEINTION))
+        self.fitness = None
+        self.history = []
+        self.gradient_scores = np.zeros(self.N)
+        self.BestX = None
+        self.BestFX = None
+
+    def evaluate(self, prob):
+        self.prob = prob
+        if self.fitness is None:
+            self.fitness = np.array([self._evaluate(ind) for ind in self.population])
+        else:
+            if len(self.history) >= 1:
+                delta = self.fitness - self.history[-1]
+                self.gradient_scores = -delta
+            self.fitness = np.array([self._evaluate(ind) for ind in self.population])
+
+        self.history.append(self.fitness.copy())
+
+    def update(self):
+        best_idx = np.argmin(self.fitness)
+        if self.BestFX is None or self.fitness[best_idx] < self.BestFX:
+            self.BestX = self.population[best_idx]
+            self.BestFX = self.fitness[best_idx]
+
+    def generation(self):
+        new_population = []
+        for _ in range(self.N):
+            parents = self.population[np.random.choice(self.N, 2, replace=False)]
+            child = np.mean(parents, axis=0)
+            mutation = np.random.normal(0, 0.1, self.PROB_DIMEINTION)
+            child += mutation
+            child = np.clip(child, -self.Xmax, self.Xmax)
+            new_population.append(child)
+
+        new_population = np.array(new_population)
+        new_fitness = np.array([self._evaluate(ind) for ind in new_population])
+
+        for i in range(self.N):
+            if new_fitness[i] < self.fitness[i] or self.gradient_scores[i] > 0:
+                self.population[i] = new_population[i]
+                self.fitness[i] = new_fitness[i]
+
+
 def run(problem, optimizer, MAX_EVALUATIONS, filename):
     print("run {}".format(filename))
 
@@ -329,11 +395,14 @@ if __name__ == "__main__":
     N, MAX_EVALUATIONS, PROB_DIMEINTION, Xmax = 50, 50000, 20, 50
     PROBLEM_LIST = ["Rosenbrock", "Ackley", "Rastrigin"]
 
+
     #Random search setting
     RS = RandomSearch(N, Xmax, MAX_EVALUATIONS, PROB_DIMEINTION)
     for i in range(len(PROBLEM_LIST)):
         fnc = Function(PROBLEM_LIST[i], PROB_DIMEINTION)
         run(fnc, RS, MAX_EVALUATIONS, "RS_{}".format(PROBLEM_LIST[i]))
+
+
 
     #DE setting
     F, CR = 0.5, 0.9
@@ -342,8 +411,16 @@ if __name__ == "__main__":
         fnc = Function(PROBLEM_LIST[i], PROB_DIMEINTION)
         run(fnc, DE, MAX_EVALUATIONS, "DE_{}".format(PROBLEM_LIST[i]))
 
+        
     # JADE setting
     JADE_Optimizer = JADE(N, Xmax, MAX_EVALUATIONS, PROB_DIMEINTION)
     for i in range(len(PROBLEM_LIST)):
         fnc = Function(PROBLEM_LIST[i], PROB_DIMEINTION)
         run(fnc, JADE_Optimizer, MAX_EVALUATIONS, "JADE_{}".format(PROBLEM_LIST[i]))
+
+
+    # GradientAidedGA setting
+    GA = GradientAidedGA(N, Xmax, MAX_EVALUATIONS, PROB_DIMEINTION)
+    for i in range(len(PROBLEM_LIST)):
+        fnc = Function(PROBLEM_LIST[i], PROB_DIMEINTION)
+        run(fnc, GA, MAX_EVALUATIONS, "GradGA_{}".format(PROBLEM_LIST[i]))
