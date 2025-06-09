@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     for i in range(n):
         lines.append(input())
-        
+
     """
     for l in sys.stdin:
         lines.append(l.rstrip('\r\n'))

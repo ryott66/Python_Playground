@@ -7,7 +7,7 @@ def lcs_table(s1, s2):
     # DP
     for i in range(1, x + 1):
         for j in range(1, y + 1):
-            if s1[i - 1] == s2[j - 1]:
+            if s1[i - 1] == s2[j - 1]: #実際のi文字目はインデックスi-1
                 dp[i][j] = dp[i - 1][j - 1] + 1
             else:
                 dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
@@ -59,7 +59,7 @@ def main():
         str1 = input("1つ目の文字列を入力してください：")
         str2 = input("2つ目の文字列を入力してください：")
         print("この文字列で実行しますか？")
-        if ask_yes_no():
+        if ask_yes_no(): #if True(yes)
             break
 
     dp = lcs_table(str1, str2)
@@ -72,7 +72,7 @@ def main():
     if ask_yes_no():
         memo = {}
         all_lcs = find_all_lcs(dp, str1, str2, len(str1), len(str2), memo)
-        all_lcs = sorted(list(all_lcs))
+        all_lcs = sorted(list(all_lcs)) #辞書順
 
         print(f"\n最長共通部分列は {len(all_lcs)} 通りあります：")
         for lcs in all_lcs:
