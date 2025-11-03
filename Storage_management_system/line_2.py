@@ -15,7 +15,7 @@ def main(lines):
         req = Request_Handler.from_line(request)
         # print(req.req_type, end="  ")
         req.execute(storages)
-        
+
 
 
 
@@ -44,6 +44,6 @@ if __name__ == '__main__':
     2022-04-06T12:31 UPLOAD storage_A1 filez 2000000000
     2022-04-10T12:30 DELETE storage_A1 filex
     2022-04-15T12:30 DELETE storage_A2 filey
-    2022-05-01T00:00 CALC   
+    2022-05-01T00:00 CALC
     2022-06-01T00:00 CALC
     """

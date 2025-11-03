@@ -9,7 +9,7 @@ class Request:
         self.req_type = req_type
         self.storage_name = storagename
         self.file_name = filename
-    
+
     # True for storage_name starts with "storage_A.....""
     def is_valid_storage(self):
         return self.storage_name.startswith("storage_A")
@@ -30,7 +30,7 @@ class Upload(Request):
             # print("execute")
             handler = Storage_Handler(storages, self.storage_name)
             print(handler.upload(self.file_name, self.file_size))
-            
+
 
 
 class Delete(Request):
@@ -69,7 +69,7 @@ class Calc:
     def execute(self, storages):
         #do
         # print("execute")
-        status_list = [s.get_status() for s in storages.values()] #get status by all storages 
+        status_list = [s.get_status() for s in storages.values()] #get status by all storages
         fee = calc_fee(status_list)
         print(f"CALC: [{int(storages["storage_A1"].used)} {int(storages["storage_A2"].used)} 0 0] {fee["storage_fee"]} {fee["update_fee"]} {fee["usage_fee"]}")
 
@@ -78,7 +78,7 @@ class Calc:
             s.update_size = 0
 
 
-#Judge Which Request 
+#Judge Which Request
 class Request_Handler:
     @staticmethod
     def from_line(line):
@@ -91,7 +91,7 @@ class Request_Handler:
             return Delete(parts[0], parts[1], parts[2], parts[3])
         elif req_type == "UPDATE":
             return Update(parts[0], parts[1], parts[2], parts[3], parts[4])
-        elif req_type == "CALC":
+        elif req_type == "CALC":    
             return Calc(parts[0], parts[1])
         else:
             raise ValueError(f"Unknown request type")
