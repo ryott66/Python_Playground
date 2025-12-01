@@ -2,6 +2,7 @@ import math  as mt
 import numpy as np
 import scipy.stats as stats
 
+# metaheuristic optimization
 
 class Function:
 
@@ -177,7 +178,7 @@ class DifferentialEvolution:
             if np.random.rand() < self.CR:
               u[i] = v[i]
         return u
-    
+
 class JADE:
     def __init__(self, N, Xmax, MAX_EVALUATIONS, PROB_DIMEINTION):
         self.N = N
@@ -411,7 +412,7 @@ if __name__ == "__main__":
         fnc = Function(PROBLEM_LIST[i], PROB_DIMEINTION)
         run(fnc, DE, MAX_EVALUATIONS, "DE_{}".format(PROBLEM_LIST[i]))
 
-        
+
     # JADE setting
     JADE_Optimizer = JADE(N, Xmax, MAX_EVALUATIONS, PROB_DIMEINTION)
     for i in range(len(PROBLEM_LIST)):
